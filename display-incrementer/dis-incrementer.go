@@ -14,6 +14,19 @@ func main() {
 	redisChannelName := os.Getenv("UNSPEAK_CHANNEL_SPOKEN")
 	redisAddress := os.Getenv("UNSPEAK_REDIS_ADDRESS")
 
+	done := make(chan bool)
+	msg := make(chan string)
+
+	go pinWorker(msg)
+	go redisWorker(redisAddress, redisChannelName, msg, done)
+
+	//Wait until we are Done...
+	<-done
+
+	fmt.Println("Exiting")
+}
+
+func redisWorker(redisAddress string, redisChannelName string, msg chan<- string, done chan<- bool) {
 	client := redis.NewClient(&redis.Options{
 		Addr:     redisAddress,
 		Password: "", // no password set
@@ -24,19 +37,6 @@ func main() {
 	pubsub := client.Subscribe(redisChannelName)
 	defer pubsub.Close()
 
-	done := make(chan bool)
-	msg := make(chan string)
-
-	go pinWorker(msg)
-	go redisWorker(pubsub, msg, done)
-
-	//Wait until we are Done...
-	<-done
-
-	fmt.Println("Exiting")
-}
-
-func redisWorker(pubsub *redis.PubSub, msg chan<- string, done chan<- bool) {
 	for {
 		message, err := pubsub.ReceiveMessage()
 		if err != nil {

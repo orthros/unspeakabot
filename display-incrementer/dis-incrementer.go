@@ -58,11 +58,7 @@ func pinWorker(msg <-chan string) {
 	// defer rpio.Close();
 
 	//pin := rpio.Pin(10);
-	for {
-		message, more := <-msg
-		if !more {
-			break
-		}
+	for message := range msg {
 		//At this point we should increment the counter
 		//pin.Toggle();
 		fmt.Println(message)

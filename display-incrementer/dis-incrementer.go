@@ -6,61 +6,63 @@ import "os"
 import "github.com/go-redis/redis"
 import "github.com/joho/godotenv"
 
-//import "github.com/stianeikeland/go-rpio"
+import "github.com/stianeikeland/go-rpio"
 
 func main() {
-	godotenv.Load()
+    godotenv.Load()
 
-	redisChannelName := os.Getenv("UNSPEAK_CHANNEL_SPOKEN")
-	redisAddress := os.Getenv("UNSPEAK_REDIS_ADDRESS")
+    redisChannelName := os.Getenv("UNSPEAK_CHANNEL_SPOKEN")
+    redisAddress := os.Getenv("UNSPEAK_REDIS_ADDRESS")
 
-	done := make(chan bool)
-	msg := make(chan string)
+    done := make(chan bool)
+    msg := make(chan string)
 
-	go pinWorker(msg)
-	go redisWorker(redisAddress, redisChannelName, msg, done)
+    go pinWorker(msg)
+    go redisWorker(redisAddress, redisChannelName, msg, done)
 
-	//Wait until we are Done...
-	<-done
+    //Wait until we are Done...
+    <-done
 
-	fmt.Println("Exiting")
+    fmt.Println("Exiting")
 }
 
 func redisWorker(redisAddress string, redisChannelName string, msg chan<- string, done chan<- bool) {
-	client := redis.NewClient(&redis.Options{
-		Addr:     redisAddress,
-		Password: "", // no password set
-		DB:       0,  // use default DB
-	})
-	defer client.Close()
+    client := redis.NewClient(&redis.Options{
+        Addr:     redisAddress,
+        Password: "", // no password set
+        DB:       0,  // use default DB
+    })
+    defer client.Close()
 
-	pubsub := client.Subscribe(redisChannelName)
-	defer pubsub.Close()
+    pubsub := client.Subscribe(redisChannelName)
+    defer pubsub.Close()
 
-	for {
-		message, err := pubsub.ReceiveMessage()
-		if err != nil {
-			break
-		}
-		msg <- message.Payload
-	}
-	close(msg)
-	done <- true
+    for {
+        message, err := pubsub.ReceiveMessage()
+        if err != nil {
+            break
+        }
+        msg <- message.Payload
+    }
+    close(msg)
+    done <- true
 }
 
 func pinWorker(msg <-chan string) {
 
-	// err := rpio.Open(); err != nil {
-	// 	fmt.Println(err)
-	// 	os.Exit(1)
-	// }
+    err := rpio.Open()
 
-	// defer rpio.Close();
+    if err != nil {
+        fmt.Println(err)
+        os.Exit(1)
+    }
 
-	//pin := rpio.Pin(10);
-	for message := range msg {
-		//At this point we should increment the counter
-		//pin.Toggle();
-		fmt.Println(message)
-	}
+    defer rpio.Close();
+
+    //pin := rpio.Pin(10);
+    for message := range msg {
+    //At this point we should increment the counter
+    //pin.Toggle();
+        fmt.Println(message)
+    }
 }

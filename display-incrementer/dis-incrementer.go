@@ -33,9 +33,11 @@ func redisWorker(redisAddress string, redisChannelName string, msg chan<- string
         DB:       0,  // use default DB
     })
     defer client.Close()
+    fmt.Println("Worker created")
 
     pubsub := client.Subscribe(redisChannelName)
     defer pubsub.Close()
+    fmt.Println("Subscribed")
 
     for {
         message, err := pubsub.ReceiveMessage()
@@ -49,7 +51,7 @@ func redisWorker(redisAddress string, redisChannelName string, msg chan<- string
 }
 
 func pinWorker(msg <-chan string) {
-
+    fmt.Println("In Pin worker")
     err := rpio.Open()
 
     if err != nil {
@@ -58,7 +60,7 @@ func pinWorker(msg <-chan string) {
     }
 
     defer rpio.Close();
-
+    fmt.Println("Pin created")
     //pin := rpio.Pin(10);
     for message := range msg {
     //At this point we should increment the counter

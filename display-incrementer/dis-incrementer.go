@@ -2,6 +2,7 @@ package main
 
 import "fmt"
 import "os"
+import "time"
 
 import "github.com/go-redis/redis"
 import "github.com/joho/godotenv"
@@ -19,6 +20,7 @@ func main() {
 
     go pinWorker(msg)
     go redisWorker(redisAddress, redisChannelName, msg, done)
+    go sweeper()
 
     //Wait until we are Done...
     <-done
@@ -66,5 +68,17 @@ func pinWorker(msg <-chan string) {
     //At this point we should increment the counter
     //pin.Toggle();
         fmt.Println(message)
+    }
+}
+
+func sweeper() {
+    fmt.Println("Starting sweeper")
+    ticker := time.NewTicker(time.Millisecond * 500)
+
+    mainTime := time.Now()
+    for t := range ticker.C {
+        if(mainTime.Day() != t.Day()) {
+                fmt.Println("Need to reset the counter")
+        }
     }
 }

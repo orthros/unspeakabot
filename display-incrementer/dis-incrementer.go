@@ -61,7 +61,7 @@ func pinWorker(msg <-chan string) {
         os.Exit(1)
     }
 
-    defer rpio.Close();
+    defer rpio.Close()
     fmt.Println("Pin created")
     //pin := rpio.Pin(10);
     for message := range msg {
@@ -77,7 +77,7 @@ func sweeper() {
 
     mainTime := time.Now()
     for t := range ticker.C {
-        if(mainTime.Day() != t.Day()) {
+        if mainTime.Day() != t.Day() {
                 fmt.Println("Need to reset the counter")
         }
     }

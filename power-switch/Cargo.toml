@@ -1,0 +1,6 @@
+[package]
+name = "power-switch"
+version = "0.1.0"
+authors = ["Colin Nelson <orthros@users.noreply.github.com>"]
+
+[dependencies]

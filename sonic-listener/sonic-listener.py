@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-import speech_recognition as sr
 
-import time
-
-from os.path import join, dirname
 import os
+from os.path import join, dirname
+import time
 import re
+
+import speech_recognition as sr
 from dotenv import load_dotenv
 
 # redis-py

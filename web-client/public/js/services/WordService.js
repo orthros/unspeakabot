@@ -4,7 +4,9 @@ angular.module('WordService', []).factory('Word', ['$http', function ($http) {
     return {
         // call to get all nerds
         get: function () {
-            return $http.get('/api/words');
+            retval = $http.get('/api/words').json();
+            console.log((retval.$$state));
+            return retval;
         },
 
         // these will work when more API routes are defined on the Node side of things

@@ -3,5 +3,21 @@
     <h1>Man look at these words</h1>
 
     <p>{{ tagline }}</p>
-    <p>{{ someData }}</p>
+    <div>
+        <table class="table table-hover text-center">
+            <th>
+                Word
+            </th>
+            <tr ng-repeat="word in someData.value.data.word">
+                <td>
+                    {{word}}
+                </td>
+                <td>
+                    <button>
+                        Delete
+                    </button>
+                </td>
+            </tr>
+        </table>
+    </div>
 </div>

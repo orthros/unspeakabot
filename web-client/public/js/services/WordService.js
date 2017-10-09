@@ -4,7 +4,7 @@ angular.module('WordService', []).factory('Word', ['$http', function ($http) {
     return {
         // call to get all nerds
         get: function () {
-            retval = $http.get('/api/words').json();
+            retval = $http.get('/api/words');
             console.log((retval.$$state));
             return retval;
         },
